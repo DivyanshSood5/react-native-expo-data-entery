@@ -1,0 +1,7 @@
+{
+  "watchmanIgnoreDirs": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/.expo/",
+    "<rootDir>/dist/"
+  ]
+}

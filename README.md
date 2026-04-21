@@ -90,29 +90,46 @@ ReactNativeExcel/
 - `npm run ios` - Run on iOS simulator
 - `npm run android` - Run on Android emulator
 
+### Troubleshooting
+
+**EMFILE: too many open files error (macOS)**
+
+If you see `Error: EMFILE: too many open files, watch`:
+
+```bash
+# Option 1: Run with clear cache
+npm start
+
+# Option 2: Use a different port
+npx expo start --port 8083
+
+# Option 3: Increase file descriptor limit (if needed)
+launchctl limit maxfiles 65536 65536
+```
+
 ## Roadmap
 
-### Phase 1 - MVP (Current)
+### Phase 1 - MVP
 - [x] Basic grid with virtual scrolling
 - [x] Cell editing (text, numbers)
 - [x] Basic formulas (SUM, AVERAGE, math)
-- [x] Single sheet per workbook
 - [x] AsyncStorage save/load
 - [x] File browser
 
 ### Phase 2 - Core Features
-- [ ] Multiple sheets
-- [ ] Full formula set (VLOOKUP, IF, date functions)
-- [ ] Cell formatting (bold, italic, colors, alignment)
-- [ ] Number formats (currency, percentage, date)
-- [ ] Excel import/export
-- [ ] Folders
+- [x] Multiple sheets per workbook
+- [x] Full formula set (VLOOKUP, IF, date, text, logical functions)
+- [x] Cell formatting (bold, italic, underline, alignment)
+- [x] Excel import/export service
+- [x] Formatting toolbar
 
 ### Phase 3 - Advanced
-- [ ] Data validation
+- [ ] Data validation with dropdowns
 - [ ] Conditional formatting
-- [ ] Borders and fill colors
-- [ ] Performance optimizations
+- [ ] Cell borders and fill colors
+- [ ] Number format presets (currency, percentage, date)
+- [ ] Performance optimizations for large grids
+- [ ] Folder organization
 
 ## License
 
