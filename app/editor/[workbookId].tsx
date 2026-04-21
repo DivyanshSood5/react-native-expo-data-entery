@@ -6,6 +6,7 @@ import { useWorkbookStore } from '../../src/store';
 import { SpreadsheetGrid } from '../../src/ui/grid';
 import { FormulaBar } from '../../src/ui/formulaBar';
 import { SheetTabs } from '../../src/ui/sheetTabs';
+import { Toolbar } from '../../src/ui/toolbar';
 
 export default function EditorScreen() {
   const { workbookId } = useLocalParams<{ workbookId: string }>();
@@ -17,9 +18,11 @@ export default function EditorScreen() {
   const addSheet = useWorkbookStore((s) => s.addSheet);
   const setCellValue = useWorkbookStore((s) => s.setCellValue);
   const setCellFormula = useWorkbookStore((s) => s.setCellFormula);
+  const setCellStyle = useWorkbookStore((s) => s.setCellStyle);
 
   const activeSheetIndex = workbook?.activeSheetIndex ?? 0;
   const activeSheet = workbook?.sheets[activeSheetIndex];
+  const selectedCellStyle = selectedCell && activeSheet?.cells.get(selectedCell)?.style;
 
   const handleFormulaChange = (formula: string) => {
     if (!workbookId || !selectedCell) return;
@@ -32,6 +35,40 @@ export default function EditorScreen() {
   };
 
   const currentFormula = selectedCell && activeSheet?.cells.get(selectedCell)?.formula;
+
+  // Toolbar handlers
+  const toggleBold = () => {
+    if (!workbookId || !selectedCell) return;
+    const current = selectedCellStyle?.bold ?? false;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, { bold: !current });
+  };
+
+  const toggleItalic = () => {
+    if (!workbookId || !selectedCell) return;
+    const current = selectedCellStyle?.italic ?? false;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, { italic: !current });
+  };
+
+  const toggleUnderline = () => {
+    if (!workbookId || !selectedCell) return;
+    const current = selectedCellStyle?.underline ?? false;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, { underline: !current });
+  };
+
+  const handleAlignLeft = () => {
+    if (!workbookId || !selectedCell) return;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, { horizontalAlign: 'left' });
+  };
+
+  const handleAlignCenter = () => {
+    if (!workbookId || !selectedCell) return;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, { horizontalAlign: 'center' });
+  };
+
+  const handleAlignRight = () => {
+    if (!workbookId || !selectedCell) return;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, { horizontalAlign: 'right' });
+  };
 
   if (!workbook || !activeSheet) {
     return (
@@ -59,6 +96,19 @@ export default function EditorScreen() {
         selectedCell={selectedCell}
         formula={currentFormula}
         onFormulaChange={handleFormulaChange}
+      />
+      <Toolbar
+        onBold={toggleBold}
+        onItalic={toggleItalic}
+        onUnderline={toggleUnderline}
+        onTextColor={() => {}}
+        onBgColor={() => {}}
+        onAlignLeft={handleAlignLeft}
+        onAlignCenter={handleAlignCenter}
+        onAlignRight={handleAlignRight}
+        onNumberFormat={() => {}}
+        onBorders={() => {}}
+        currentStyle={selectedCellStyle}
       />
       <SpreadsheetGrid
         sheet={activeSheet}
