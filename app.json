@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "React Native Excel",
+    "slug": "react-native-excel",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#107c41"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.reactnativeexcel.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#107c41"
+      },
+      "package": "com.reactnativeexcel.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
