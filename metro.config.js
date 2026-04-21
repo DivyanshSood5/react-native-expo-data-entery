@@ -5,13 +5,13 @@ const config = getDefaultConfig(__dirname);
 // Limit watch directories
 config.watchFolders = ['src', 'app'];
 
-// Disable watchman
-config.watchman = false;
-
-// Configure resolver to reduce watched files
-config.resolver = {
-  ...config.resolver,
-  unstable_enablePackageExports: false,
+// Configure Metro server to use fewer file watchers
+config.server = {
+  ...config.server,
+  enhanceMiddleware: (middleware) => middleware,
 };
+
+// Add custom cache version to force rebuild
+config.cacheVersion = '1.0.0';
 
 module.exports = config;

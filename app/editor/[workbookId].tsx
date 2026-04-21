@@ -7,11 +7,14 @@ import { SpreadsheetGrid } from '../../src/ui/grid';
 import { FormulaBar } from '../../src/ui/formulaBar';
 import { SheetTabs } from '../../src/ui/sheetTabs';
 import { Toolbar } from '../../src/ui/toolbar';
+import { CellEditorModal } from '../../src/ui/cellEditor';
+import { CellStyle } from '../../src/types';
 
 export default function EditorScreen() {
   const { workbookId } = useLocalParams<{ workbookId: string }>();
   const router = useRouter();
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
+  const [showCellEditor, setShowCellEditor] = useState(false);
 
   const workbook = useWorkbookStore((s) => s.workbooks.get(workbookId));
   const setActiveSheet = useWorkbookStore((s) => s.setActiveSheet);
@@ -22,7 +25,8 @@ export default function EditorScreen() {
 
   const activeSheetIndex = workbook?.activeSheetIndex ?? 0;
   const activeSheet = workbook?.sheets[activeSheetIndex];
-  const selectedCellStyle = selectedCell && activeSheet?.cells.get(selectedCell)?.style;
+  const selectedCellData = selectedCell && activeSheet?.cells.get(selectedCell);
+  const selectedCellStyle = selectedCellData?.style;
 
   const handleFormulaChange = (formula: string) => {
     if (!workbookId || !selectedCell) return;
@@ -70,6 +74,34 @@ export default function EditorScreen() {
     setCellStyle(workbookId, activeSheetIndex, selectedCell, { horizontalAlign: 'right' });
   };
 
+  const handleNumberFormat = () => {
+    setShowCellEditor(true);
+  };
+
+  const handleBorders = () => {
+    setShowCellEditor(true);
+  };
+
+  const handleCellLongPress = (cellId: string) => {
+    setSelectedCell(cellId);
+    setShowCellEditor(true);
+  };
+
+  const handleCellSave = (updates: any) => {
+    if (!workbookId || !selectedCell) return;
+    if (updates.value !== undefined || updates.formattedValue !== undefined) {
+      setCellValue(workbookId, activeSheetIndex, selectedCell, updates.value);
+    }
+    if (updates.validation !== undefined) {
+      // Store validation in cell
+    }
+  };
+
+  const handleApplyStyle = (style: Partial<CellStyle>) => {
+    if (!workbookId || !selectedCell) return;
+    setCellStyle(workbookId, activeSheetIndex, selectedCell, style);
+  };
+
   if (!workbook || !activeSheet) {
     return (
       <View style={styles.container}>
@@ -87,7 +119,10 @@ export default function EditorScreen() {
         )}
         title={workbook.name}
         right={() => (
-          <IconButton icon="share-variant" onPress={() => {}} />
+          <>
+            <IconButton icon="format-paint" onPress={() => setShowCellEditor(true)} />
+            <IconButton icon="share-variant" onPress={() => {}} />
+          </>
         )}
         style={styles.header}
         textStyle={styles.headerTitle}
@@ -101,26 +136,33 @@ export default function EditorScreen() {
         onBold={toggleBold}
         onItalic={toggleItalic}
         onUnderline={toggleUnderline}
-        onTextColor={() => {}}
-        onBgColor={() => {}}
+        onTextColor={() => setShowCellEditor(true)}
+        onBgColor={() => setShowCellEditor(true)}
         onAlignLeft={handleAlignLeft}
         onAlignCenter={handleAlignCenter}
         onAlignRight={handleAlignRight}
-        onNumberFormat={() => {}}
-        onBorders={() => {}}
+        onNumberFormat={handleNumberFormat}
+        onBorders={handleBorders}
         currentStyle={selectedCellStyle}
       />
       <SpreadsheetGrid
         sheet={activeSheet}
         selectedCell={selectedCell}
         onCellPress={setSelectedCell}
-        onCellLongPress={setSelectedCell}
+        onCellLongPress={handleCellLongPress}
       />
       <SheetTabs
         sheets={workbook.sheets}
         activeSheetIndex={activeSheetIndex}
         onSheetPress={(index) => setActiveSheet(workbookId, index)}
         onAddSheet={() => addSheet(workbookId)}
+      />
+      <CellEditorModal
+        visible={showCellEditor}
+        cell={selectedCellData || null}
+        onClose={() => setShowCellEditor(false)}
+        onSave={handleCellSave}
+        onApplyStyle={handleApplyStyle}
       />
     </View>
   );

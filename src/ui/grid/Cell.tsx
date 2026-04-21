@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Cell as CellType } from '../../types';
+import { conditionalFormattingEngine } from '../../core/conditionalFormatting';
 
 interface CellProps {
   cellId: string;
@@ -18,6 +19,22 @@ export const Cell: React.FC<CellProps> = ({
   onLongPress,
 }) => {
   const style = cellData?.style;
+  const borders = style?.borders;
+
+  // Apply conditional formatting
+  let conditionalFormat = {};
+  if (cellData) {
+    conditionalFormat = conditionalFormattingEngine.applyConditionalFormatting(cellData, cellId);
+  }
+
+  const getBorderWidth = (border: any) => {
+    if (!border || border.style === 'none') return 0;
+    return 1;
+  };
+
+  const getBorderColor = (border: any) => {
+    return border?.color || '#e0e0e0';
+  };
 
   return (
     <Pressable
@@ -25,9 +42,22 @@ export const Cell: React.FC<CellProps> = ({
       onLongPress={onLongPress}
       style={[
         styles.cell,
+        {
+          borderLeftWidth: getBorderWidth(borders?.left),
+          borderRightWidth: getBorderWidth(borders?.right),
+          borderTopWidth: getBorderWidth(borders?.top),
+          borderBottomWidth: getBorderWidth(borders?.bottom),
+          borderLeftColor: getBorderColor(borders?.left),
+          borderRightColor: getBorderColor(borders?.right),
+          borderTopColor: getBorderColor(borders?.top),
+          borderBottomColor: getBorderColor(borders?.bottom),
+        },
         isSelected && styles.selectedCell,
         style && {
-          backgroundColor: style.backgroundColor,
+          backgroundColor: conditionalFormat.backgroundColor || style.backgroundColor,
+        },
+        conditionalFormat.backgroundColor && {
+          backgroundColor: conditionalFormat.backgroundColor,
         },
       ]}
     >
@@ -35,8 +65,8 @@ export const Cell: React.FC<CellProps> = ({
         style={[
           styles.cellText,
           style && {
-            color: style.textColor,
-            fontWeight: style.bold ? 'bold' : 'normal',
+            color: conditionalFormat.textColor || style.textColor,
+            fontWeight: conditionalFormat.bold ? 'bold' : style.bold ? 'bold' : 'normal',
             fontStyle: style.italic ? 'italic' : 'normal',
             textDecorationLine: style.underline ? 'underline' : 'none',
             fontSize: style.fontSize,
@@ -54,9 +84,6 @@ const styles = StyleSheet.create({
   cell: {
     minWidth: 80,
     height: 40,
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#e0e0e0',
     paddingHorizontal: 8,
     paddingVertical: 4,
     backgroundColor: '#ffffff',

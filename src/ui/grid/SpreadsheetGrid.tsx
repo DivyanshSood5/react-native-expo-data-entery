@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Worksheet } from '../../types';
 import { Cell } from './Cell';
 import { colToLetter } from '../../core/formula';
@@ -69,6 +69,11 @@ export const SpreadsheetGrid: React.FC<SpreadsheetGridProps> = ({
         renderItem={renderRow}
         keyExtractor={(item) => item.toString()}
         showsVerticalScrollIndicator={true}
+        // Performance optimizations for large grids
+        windowSize={10}
+        maxToRenderPerBatch={15}
+        removeClippedSubviews={true}
+        initialNumToRender={25}
       />
     </View>
   );
