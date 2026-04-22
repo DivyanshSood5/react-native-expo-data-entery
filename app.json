@@ -4,6 +4,7 @@
     "slug": "react-native-excel",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "rnexcel",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
